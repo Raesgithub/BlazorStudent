@@ -1,0 +1,40 @@
+﻿
+@inject HttpClient http
+<h3>@HeaderPage</h3>
+<div class="row">
+    <div class="col-12">
+        <EditForm Model="Student" OnValidSubmit="OnValidSubmit">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Id</label>
+                <input class="form-control" @bind-value="Student.Id">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">First name</label>
+                <input class="form-control" @bind-value="Student.Fname">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Last name</label>
+                <input class="form-control" @bind-value="Student.Lname">
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </EditForm>
+       @* @if (messgae!="")
+        {
+            <div class="alert bg-info">
+                @messgae
+            </div>
+        }*@
+    </div>
+</div>
+@code {
+    [Parameter] public Student Student { get; set; }
+    [Parameter] public int StudentId { get; set; }
+    [Parameter] public string HeaderPage { get; set; }
+
+    [Parameter] public EventCallback OnValidSubmit{ get; set; }
+
+
+   
+}

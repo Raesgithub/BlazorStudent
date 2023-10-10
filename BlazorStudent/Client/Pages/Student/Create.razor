@@ -1,0 +1,57 @@
+﻿@page "/student/create"
+@page "/student/edit/{StudentId:int}"
+@inject HttpClient http
+
+
+@if (StudentId>0)
+{
+    <StudentForm StudentId="StudentId" HeaderPage="Edit Student" Student="student" OnValidSubmit="UpdateStudent" />
+}
+else
+{
+    <StudentForm  StudentId="0" HeaderPage="Add Student" Student="student" OnValidSubmit="CreateStudent"/>
+}
+@if (message!=null)
+{
+    <h3>@message</h3>
+}
+
+@code{
+    [Parameter] public int StudentId { get; set; }
+    Student student = new Student();
+    string? message=null;
+    protected override async Task OnInitializedAsync()
+    {
+        if (StudentId>0)
+        {
+            student = await http.GetFromJsonAsync<Student>($"/StudentService/Get/{StudentId}");
+        }
+    }
+    async Task CreateStudent()
+    {
+        if (student.Fname.Length<3)
+        {
+            message = "نام کوتاه می باشد";
+            StateHasChanged();
+            return;
+        }
+        var result = await http.PostAsJsonAsync("StudentService", student);
+        if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+
+        }
+        else
+        {
+            message = result.Content.ToString();
+        }
+    }
+    async Task UpdateStudent()
+    {
+        var result = await http.PostAsJsonAsync("StudentService/Update", student);
+        if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+
+        }
+    }
+}
+

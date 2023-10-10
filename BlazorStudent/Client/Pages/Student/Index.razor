@@ -1,0 +1,53 @@
+﻿@page "/student/index"
+@inject HttpClient http
+<div>
+       <a class="btn btn-success" href="/student/create">Create</a>
+</div>
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th></th>
+   </tr>
+    @if (Students==null)
+    {
+        <tr>
+            <td colspan="3"><div class="alert bg-info text-center"><strong>no data</strong></div></td>
+        </tr>
+    }
+    else
+    {
+        foreach (var item in Students)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Fname</td>
+                <td>@item.Lname</td>
+                <td>
+                    <a class="btn btn-primary btn-sm" href="@StudentEdit(@item.Id)">Edit</a> |
+                    <a class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+
+@code {
+    List<Student>? Students;
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllStudents();
+    }
+    private  async  Task GetAllStudents()
+    {
+        Students = await http.GetFromJsonAsync<List<Student>>("StudentService");
+
+    }
+    string StudentEdit(int id)
+    {
+        return $"/student/edit/{id}";
+    }
+
+}
