@@ -1,8 +1,12 @@
 ﻿@page "/student/create"
 @page "/student/edit/{StudentId:int}"
 @using System.Text.Json;
+@using BlazorStudent.Client.Helpers;
 @using BlazorStudent.Shared.Dtos;
+@using CurrieTechnologies.Razor.SweetAlert2;
 @inject HttpClient http
+@inject SweetAlertService Swal;
+@inject NavigationManager UriHelper
 
 
 @if (StudentId>0)
@@ -33,8 +37,8 @@ else
     {
         if (student.Fname.Length<3)
         {
-            message = "نام کوتاه می باشد";
-            StateHasChanged();
+            await Swal.FireAsync("خطا...", "نام نباید کمتر از 3 کاراکتر باشد!", "error");
+            //StateHasChanged();
             return;
         }
         try
@@ -44,18 +48,37 @@ else
             var data = JsonSerializer.Deserialize<ResultDto>(xx);
             if (data.isSuccess)
             {
-                message = "Saved";
+                var alert = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "حالا چی?",
+                        Text = "داده جدید ثبت می کنی یا برمی گردی",
+                        Icon = SweetAlertIcon.Question,
+                        ShowCancelButton = true,
+                        ConfirmButtonText = "داده جدیدی ثبت میکنم!",
+                        CancelButtonText = "برو به لیست"
+                    });
+
+                if (!string.IsNullOrEmpty(alert.Value))
+                {
+                    student = new Student();
+                    StateHasChanged();
+                }
+                else if (alert.Dismiss == DismissReason.Cancel)
+                {
+                    UriHelper.NavigateTo($"/student/index");
+                }
             }
             else
             {
-                message = data?.message;
+                await Swal.FireAsync("خطا...", data.message, "error");
             }
-            StateHasChanged();
+
+          
         }
         catch (Exception ex)
         {
 
-            message = ex.Message;
+            await Swal.FireAsync("خطا...",ex.Message, "error");
         }
        
      
@@ -69,13 +92,14 @@ else
             var data = JsonSerializer.Deserialize<ResultDto>(xx);
             if (data.isSuccess)
             {
-                message = "Saved";
+                await Swal.FireAsync("ذخیره شد!");
+                UriHelper.NavigateTo($"/student/index");
             }
             else
             {
-                message = data?.message;
+                await Swal.FireAsync("خطا...", data.message, "error");
             }
-            StateHasChanged();
+           
         }
         catch (Exception ex)
         {
