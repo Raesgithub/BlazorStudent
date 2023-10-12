@@ -1,5 +1,6 @@
 ﻿using BlazorStudent.Server.Data;
 using BlazorStudent.Shared;
+using BlazorStudent.Shared.Dtos;
 using BlazorStudent.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,27 +28,39 @@ namespace BlazorStudent.Server.Controllers
             return _context.Students.Where(a=>a.Id==id).FirstOrDefault();
         }
         [HttpPost]
-        public IActionResult Post(Student student) {
+        public ResultDto Post(Student student) {
             try
             {
                 _context.Students.Add(student);
                 _context.SaveChanges();
-                return Ok();
+                return new ResultDto { isSuccess = true,message="Saved Successfully" };
             }
             catch (Exception ex)
             {
-
-                return Problem("sssssssssssssssssssssss");
+                ResultDto resultDto = new ResultDto();
+                resultDto.isSuccess = false;
+                resultDto.message = ex.InnerException == null ? ex.Message.Replace("'", "").Replace("\"", "") : ex.InnerException.Message.Replace("'", "").Replace("\"", "");
+                return resultDto;
             }
-            
+
         }
         [Route("Update")]
         [HttpPost]
-        public IActionResult Update(Student student)
+        public ResultDto Update(Student student)
         {
-            _context.Students.Update(student);
-            _context.SaveChanges();
-            return Ok();
+            try
+            {
+                _context.Students.Update(student);
+                _context.SaveChanges();
+                return new ResultDto { isSuccess = true, message = "Saved Successfully" };
+            }
+            catch (Exception ex)
+            {
+                ResultDto resultDto = new ResultDto();
+                resultDto.isSuccess = false;
+                resultDto.message = ex.InnerException == null ? ex.Message.Replace("'", "").Replace("\"", "") : ex.InnerException.Message.Replace("'", "").Replace("\"", "");
+                return resultDto;
+            }
         }
 
     }

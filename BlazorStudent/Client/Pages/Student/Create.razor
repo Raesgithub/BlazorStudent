@@ -1,5 +1,7 @@
 ﻿@page "/student/create"
 @page "/student/edit/{StudentId:int}"
+@using System.Text.Json;
+@using BlazorStudent.Shared.Dtos;
 @inject HttpClient http
 
 
@@ -35,22 +37,50 @@ else
             StateHasChanged();
             return;
         }
-        var result = await http.PostAsJsonAsync("StudentService", student);
-        if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+        try
+        {
+            var result = await http.PostAsJsonAsync("StudentService", student);
+            var xx = await result.Content.ReadAsStringAsync();
+            var data = JsonSerializer.Deserialize<ResultDto>(xx);
+            if (data.isSuccess)
+            {
+                message = "Saved";
+            }
+            else
+            {
+                message = data?.message;
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
         {
 
+            message = ex.Message;
         }
-        else
-        {
-            message = result.Content.ToString();
-        }
+       
+     
     }
     async Task UpdateStudent()
     {
-        var result = await http.PostAsJsonAsync("StudentService/Update", student);
-        if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+        try
+        {
+            var result = await http.PostAsJsonAsync("StudentService/Update", student);
+            var xx = await result.Content.ReadAsStringAsync();
+            var data = JsonSerializer.Deserialize<ResultDto>(xx);
+            if (data.isSuccess)
+            {
+                message = "Saved";
+            }
+            else
+            {
+                message = data?.message;
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
         {
 
+            message = ex.Message;
         }
     }
 }
