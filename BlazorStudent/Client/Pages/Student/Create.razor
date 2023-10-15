@@ -35,6 +35,7 @@ else
     }
     async Task CreateStudent()
     {
+        
         if (student.Fname.Length<3)
         {
             await Swal.FireAsync("خطا...", "نام نباید کمتر از 3 کاراکتر باشد!", "error");
